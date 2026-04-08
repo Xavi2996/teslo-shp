@@ -1,3 +1,8 @@
+/* swiper */
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: night --default;

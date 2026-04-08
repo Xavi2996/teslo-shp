@@ -1,11 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ProductImagePipe } from '@products/pipes/product-image.pipe';
 import { ProductsService } from '@products/services/products.service';
+import { ProductCarouselComponent } from '@store-front/components/product-carousel/product-carousel.component';
 
 @Component({
   selector: 'app-product-page',
-  imports: [],
+  imports: [ProductCarouselComponent],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.css',
 })

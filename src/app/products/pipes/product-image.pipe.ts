@@ -9,8 +9,6 @@ const baseUrl = environment.baseUrl;
 })
 export class ProductImagePipe implements PipeTransform {
   transform(value: string | string[]): string {
-    console.log(value);
-
     if (typeof value === 'string') {
       return `${baseUrl}/files/product/${value}`;
     }

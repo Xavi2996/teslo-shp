@@ -1,1 +1,24 @@
-<p>gender-page works!</p>
+<h1 class="text-3xl font-bold font-montserrat">
+  Todos los productos <span class="text-accent">{{ gender() }}</span>
+</h1>
+<h2 text-xl mb-5>Para todos los gustos</h2>
+<p>{{ gender() }}</p>
+
+<div
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-2"
+>
+  @if (productsResources.isLoading()) {
+    <p class="text-center">Cargando productos...</p>
+  } @else {
+    @for (product of productsResources.value()?.products; track $index) {
+      <product-card [product]="product"></product-card>
+    } @empty {
+      <p>No hay productos</p>
+    }
+  }
+</div>
+
+<app-pagination
+  [pages]="productsResources.value()?.pages ?? 0"
+  [currentPage]="paginationServices.currentPage()"
+></app-pagination>
