@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthServiceService } from '@auth/services/auth-service.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
@@ -12,6 +13,8 @@ import { AuthServiceService } from '@auth/services/auth-service.service';
 export class LoginPageComponent {
   authService = inject(AuthServiceService);
   fb = inject(FormBuilder);
+  router = inject(Router);
+
   hasError = signal(false);
   isPosting = signal(false);
 
@@ -35,9 +38,16 @@ export class LoginPageComponent {
 
     this.authService.login(email!, password!).subscribe({
       next: (resp) => {
-        console.log(resp);
+        if (resp) {
+          this.router.navigate(['/']);
+          return;
+        }
 
-        console.log('Login successful');
+        this.hasError.set(true);
+        setTimeout(() => {
+          this.hasError.set(false);
+        }, 2000);
+        return;
       },
       error: (error) => {
         console.error('Login failed', error);
