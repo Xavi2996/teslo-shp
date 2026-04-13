@@ -64,4 +64,25 @@ export class ProductsService {
       }),
     );
   }
+
+  getProductById(id: string): Observable<Product> {
+    if (this.productCache.has(id)) {
+      return of(this.productCache.get(id)!);
+    }
+    return this.http.get<Product>(`${baseUrl}/products/${id}`).pipe(
+      tap((response) => {
+        console.log('respuesta getProductById:', response);
+
+        this.productCache.set(id, response);
+        return response;
+      }),
+    );
+  }
+
+  updateProduct(
+    id: string,
+    productLike: Partial<Product>,
+  ): Observable<Product> {
+    return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike);
+  }
 }

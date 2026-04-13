@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { CanMatchFn, Route, Router, UrlSegment } from '@angular/router';
 import { AuthServiceService } from '@auth/services/auth-service.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 
-export const NotAuthenticatedGuard: CanMatchFn = async (
+export const isAdminGuard: CanMatchFn = async (
   route: Route,
   segments: UrlSegment[],
 ) => {
@@ -11,10 +11,12 @@ export const NotAuthenticatedGuard: CanMatchFn = async (
 
   const router = inject(Router);
 
-  const isAuthenticated = await firstValueFrom(authService.checkAuthStatus());
-  console.log({ isAuthenticated });
+  await firstValueFrom(authService.checkAuthStatus());
 
-  if (isAuthenticated) {
+  const user = authService.user();
+  console.log({ user });
+
+  if (!user || !user.roles.includes('admin')) {
     router.navigate(['/']);
     return false;
   }
