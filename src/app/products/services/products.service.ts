@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { User } from '@auth/interfaces/user.interface';
 import {
+  Gender,
   Product,
   ProductsResponse,
 } from '@products/interfaces/product.interface';
@@ -14,6 +16,20 @@ interface Options {
   offset?: number;
   gender?: string;
 }
+
+const emptyProduct: Product = {
+  id: 'new',
+  title: '',
+  price: 0,
+  description: '',
+  slug: '',
+  stock: 0,
+  sizes: [],
+  gender: Gender.Kid,
+  tags: [],
+  images: [],
+  user: {} as User,
+};
 
 @Injectable({
   providedIn: 'root',
@@ -66,6 +82,10 @@ export class ProductsService {
   }
 
   getProductById(id: string): Observable<Product> {
+    if (id === 'new') {
+      return of(emptyProduct);
+    }
+
     if (this.productCache.has(id)) {
       return of(this.productCache.get(id)!);
     }
@@ -83,6 +103,40 @@ export class ProductsService {
     id: string,
     productLike: Partial<Product>,
   ): Observable<Product> {
-    return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike);
+    return this.http
+      .patch<Product>(`${baseUrl}/products/${id}`, productLike)
+      .pipe(
+        tap((response) => {
+          this.updateProductCache(response);
+        }),
+      );
+  }
+
+  updateProductCache(product: Product) {
+    const producId = product.id;
+    this.productCache.set(producId, product);
+
+    this.productsCache.forEach((producRespones) => {
+      producRespones.products = producRespones.products.map(
+        (currentProduct) => {
+          if (currentProduct.id === producId) {
+            return product;
+          }
+          return currentProduct;
+        },
+      );
+    });
+    console.log('Caché actualizado');
+  }
+
+  createProduct(productLike: Partial<Product>): Observable<Product> {
+    console.log(productLike);
+
+    return this.http.post<Product>(`${baseUrl}/products`, productLike).pipe(
+      tap((product) => {
+        console.log('Producto creado:', product);
+        this.updateProductCache(product);
+      }),
+    );
   }
 }
